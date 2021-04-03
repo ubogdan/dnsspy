@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"sync"
+	"strings"
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
@@ -26,7 +26,6 @@ import (
 //
 
 type dnsSpy struct {
-	wg      sync.WaitGroup
 	devName string
 	devPort int
 	err     error
@@ -66,7 +65,6 @@ func (s *dnsSpy) handleDNS(dns layers.DNS) {
 			}
 			log.Printf("%-5s %-32v %-16v %v\n", args...)
 		}
-		s.wg.Add(1)
 	}
 }
 
@@ -80,18 +78,15 @@ func (s *dnsSpy) handleIP6(ip6 layers.IPv6) {
 	s.dstIP = ip6.DstIP.String()
 }
 
-func (s *dnsSpy) openDevice() error {
-	// Open device
-	log.Printf("openDevice=%v", s.devName)
-	handle, err := pcap.OpenLive(s.devName, 1600, false, pcap.BlockForever)
-	if err != nil {
-		return err
-	}
-	s.handle = handle
-
-	// Set filter
+func (s *dnsSpy) openDevice() (err error) {
 	filter := fmt.Sprintf("udp and port %d", s.devPort)
-	log.Printf("setBPFFilter=%s", filter)
+
+	log.Printf("interface=%v, bpf filter=%v", s.devName, filter)
+	if s.handle, err = pcap.OpenLive(s.devName, 1600, false, pcap.BlockForever); err != nil {
+		return
+	}
+
+	// set filter
 	return s.handle.SetBPFFilter(filter)
 }
 
@@ -113,6 +108,10 @@ func (s *dnsSpy) capture() {
 		dns     layers.DNS
 		payload gopacket.Payload
 	)
+
+	log.Printf(strings.Repeat("-", 64))
+	log.Printf("%-5s %-32v %-16v %v\n", "Type", "Query", "SrcIP", "Response")
+	log.Printf("%-5s %-32v %-16v %v\n", strings.Repeat("-", 5), strings.Repeat("-", 32), strings.Repeat("-", 16), strings.Repeat("-", 8))
 
 	parser := gopacket.NewDecodingLayerParser(layers.LayerTypeEthernet, &eth, &ip4, &ip6, &tcp, &udp, &dns, &payload)
 	decodedLayers := make([]gopacket.LayerType, 0, 10)
