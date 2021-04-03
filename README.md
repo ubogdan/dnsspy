@@ -4,7 +4,7 @@ Go version of [DNSPeep](https://github.com/jvns/dnspeep/blob/f5780dc822df5151f83
 
 You can read more about `dnspeep` and Rust in Julia Evans [blog post](https://jvns.ca/blog/2021/03/31/dnspeep-tool/).
 
-Rust version [src]().
+Rust version [src](https://github.com/jvns/dnspeep/blob/f5780dc822df5151f83703f05c767dad830bd3b2/src/main.rs).
 
 
 ## Requirements
