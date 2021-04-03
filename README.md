@@ -22,11 +22,15 @@ $ go build main.go
 ## Run
 ``` bash
 $ sudo ./main
-* Filter:  udp and port 53
-A     api.openweathermap.org           127.0.0.53       192.241.167.16
-                                                        192.241.187.136
-                                                        192.241.245.161
-A     api.openweathermap.org           127.0.0.53       192.241.167.16
-                                                        192.241.187.136
-                                                        192.241.245.161
+interface=lo, bpf filter=udp and port 53
+----------------------------------------------------------------
+Type  Query                            SrcIP            Response
+----- -------------------------------- ---------------- --------
+A     vortex.data.microsoft.com        127.0.0.53       CNAME asimov.vortex.data.trafficmanager.net
+                                                        64.4.54.254
+AAAA  vortex.data.microsoft.com        127.0.0.53       CNAME asimov.vortex.data.trafficmanager.net
+                                                        CNAME global.vortex.data.trafficmanager.net
+A     d.dropbox.com                    127.0.0.53       CNAME d.v.dropbox.com
+                                                        CNAME d-edge.v.dropbox.com
+                                                        162.125.6.20
 ```
